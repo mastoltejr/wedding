@@ -1,0 +1,90 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum Suffix {
+  Sr
+  Jr
+  II
+  III
+  IV
+  V
+}
+
+enum Title {
+  Mr
+  Mrs
+  Ms
+  Dr
+}
+
+enum Family {
+  Stolte
+  Garza
+}
+
+enum SaveTheDate {
+  Yes
+  No
+  Unsure
+}
+
+model Person {
+  id                Int          @id @default(autoincrement())
+  shortCode         String       @unique
+  lastName          String
+  firstName         String
+  suffix            Suffix?
+  title             Title?
+  family            Family?
+  comment           String?
+  groupLabel        String?
+  group             Group?       @relation(fields: [groupLabel], references: [groupLabel])
+  email             String?
+  phone             String?
+  phoneAlerts       Boolean      @default(false)
+  mealConsideration String?
+  highchair         Boolean      @default(false)
+  wheelchair        Boolean      @default(false)
+  inviteRehearsal   Boolean      @default(false)
+  inviteWedding     Boolean      @default(false)
+  inviteAfterParty  Boolean      @default(false)
+  inviteSunday      Boolean      @default(false)
+  saveTheDate       SaveTheDate?
+  rsvpRehearsal     Boolean?
+  rsvpWedding       Boolean?
+  rsvpAfterParty    Boolean?
+  rsvpSunday        Boolean?
+  lastUpdated       DateTime     @default(now())
+  lastRefresh       DateTime     @default(now())
+}
+
+enum Language {
+  english
+  spanish
+  swissGerman
+}
+
+model Group {
+  id           Int      @id @default(autoincrement())
+  groupLabel   String
+  language     Language @default(english)
+  paperless    Boolean  @default(false)
+  address      String?
+  address2     String?
+  city         String?
+  state        String?  @db.VarChar(2)
+  zip          Int?
+  country      String?
+  mailInvite   Boolean  @default(false)
+  mailThankyou Boolean  @default(false)
+  people       Person[]
+}
