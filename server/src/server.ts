@@ -9,6 +9,7 @@ import express, {
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { PrismaClient } from '@prisma/client';
+import { sheetToDB } from './googleUtil';
 
 const { google } = require('googleapis');
 const auth = new google.auth.GoogleAuth({
@@ -17,11 +18,6 @@ const auth = new google.auth.GoogleAuth({
 });
 const prisma = new PrismaClient();
 dotenv.config();
-
-const isProductionEnv = false;
-const endpoint = isProductionEnv
-  ? 'https://auth.stolte.us'
-  : 'http://localhost:5001';
 
 const app: ExpressApplication = express();
 
@@ -40,13 +36,21 @@ const syncDatabaseToSheets = async () => {
     auth: authClient
   });
 
+  // Read data from google sheet
   const readData = await googleSheetsInstance.spreadsheets.values.get({
     auth, //auth object
     spreadsheetId: process.env['SPREADSHEET_ID'], // spreadsheet id
-    range: 'Person_db!A2:Z2' //range of cells to read from.
+    range: 'Person_db!A2:Z500' //range of cells to read from.
   });
-  console.log(readData.data.values);
-  return readData.data.values;
+  // add shortCodes where blank
+
+  // run upserts in table for all values
+  // update google sheet with default values from DB ?
+
+  let data = readData.data.values;
+  console.log(data);
+  let dbData = sheetToDB(data);
+  return dbData;
 };
 
 app.get('/', async (req, res) => {
