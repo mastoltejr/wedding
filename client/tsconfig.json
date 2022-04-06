@@ -23,9 +23,9 @@
 		"allowJs": true,
 		"checkJs": true,
 		"paths": {
-			"$lib": ["src/lib"],
-			"$lib/*": ["src/lib/*"]
+			"$lib": ["client/src/lib"],
+			"$lib/*": ["client/src/lib/*"]
 		}
 	},
-	"include": ["src/**/*.d.ts", "src/**/*.js", "src/**/*.ts", "src/**/*.svelte"]
+	"include": ["client/src/**/*.d.ts", "client/src/**/*.js", "client/src/**/*.ts", "client/src/**/*.svelte"]
 }
