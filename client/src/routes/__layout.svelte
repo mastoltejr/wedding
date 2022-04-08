@@ -1,72 +1,358 @@
 <script>
-import NavBar from "../components/layout/NavBar.svelte";
-
+	import NavBar from '../components/layout/NavBar.svelte';
 </script>
 
+<NavBar />
+<slot />
+
 <style global>
-*,
-*::before,
-*::after {
-	box-sizing: border-box;
-}
+	*,
+	*::before,
+	*::after {
+		box-sizing: border-box;
+	}
 
-/* Remove list styles (bullets/numbers) */
-ol,
-ul,
-menu {
-	list-style: none;
-}
+	/* Remove list styles (bullets/numbers) */
+	ol,
+	ul,
+	menu {
+		list-style: none;
+	}
 
-/* For images to not be able to exceed their container */
-img {
-	max-width: 100%;
-}
+	/* For images to not be able to exceed their container */
+	img {
+		max-width: 100%;
+	}
 
-/* removes spacing between cells in tables */
-table {
-	border-collapse: collapse;
-}
+	/* removes spacing between cells in tables */
+	table {
+		border-collapse: collapse;
+	}
 
-:root {
-	--color-primary: #75464a;
-	--color-secondary: #aa7c7a;
-	--color-tertiary: #beaba7;
+	:root {
+		--color-primary: #75464a;
+		--color-secondary: #aa7c7a;
+		--color-tertiary: #beaba7;
 
-	--color-html: #e8e8e9;
-	--color-background: #f3eeea;
-	--color-paper: #e8d8d4;
+		--color-html: #e8e8e9;
+		--color-background: #f3eeea;
+		--color-paper: #e8d8d4;
 
-	--spacing-1: 0.5rem;
-	--spacing-2: 1rem;
-	--spacing-3: 1.5rem;
-	--spacing-4: 2rem;
-	--spacing-5: 2.5rem;
-	--spacing-6: 3rem;
+		--spacing-1: 0.5rem;
+		--spacing-2: 1rem;
+		--spacing-3: 1.5rem;
+		--spacing-4: 2rem;
+		--spacing-5: 2.5rem;
+		--spacing-6: 3rem;
 
-	--typography-6: 0.8rem;
-	--typography-5: 1rem;
-	--typography-4: 1.5rem;
-	--typography-3: 1.7rem;
-	--typography-2: 2rem;
-	--typography-1: 2.2rem;
-}
+		--typography-6: 0.8rem;
+		--typography-5: 1rem;
+		--typography-4: 1.5rem;
+		--typography-3: 1.7rem;
+		--typography-2: 2rem;
+		--typography-1: 2.2rem;
+	}
 
-html {
-	background-color: var(--color-html);
-}
+	html {
+		background-color: var(--color-html);
+		-webkit-tap-highlight-color: transparent;
+	}
 
-body {
-	background-color: white;
-	max-width: 1440px;
-	margin: 0px auto;
-	min-height: 100vh;
-}
+	body {
+		background-color: white;
+		max-width: 1440px;
+		margin: 0px auto;
+		min-height: 100vh;
+	}
 
-.box {
-    padding: var(--spacing-3) var(--spacing-2);
-}
+	/* Form */
 
-/* Color
+	fieldset {
+		margin: var(--spacing-3) 0px;
+		border: 0.5px solid var(--color-tertiary);
+		padding: var(--spacing-3) var(--spacing-1);
+	}
+
+	legend {
+		display: block;
+		background-color: inherit;
+		padding: 0px var(--spacing-3);
+		font-size: var(--typography-4);
+	}
+
+	.form__container {
+		display: flex;
+		flex-direction: column;
+		gap: var(--spacing-2);
+	}
+
+	.form__row {
+		display: grid;
+		grid-gap: var(--spacing-2);
+		grid-auto-flow: row;
+	}
+
+	form label {
+		display: block;
+		margin-bottom: 2px;
+		letter-spacing: 0.5px;
+	}
+
+	form label span {
+		color: var(--color-primary);
+		padding-left: 2px;
+	}
+
+	form input[type='text'],
+	form input[type='search'],
+	form select {
+		width: 100%;
+		box-sizing: border-box;
+		height: var(--spacing-4);
+		padding: 0 var(--spacing-1);
+		outline: none;
+		border: 1px solid var(--color-tertiary);
+		border-radius: var(--spacing-1);
+		color: var(--color-primary);
+	}
+
+	form select {
+		padding: 0.4rem var(--spacing-1);
+	}
+
+	form input[type='text']:focus,
+	form input[type='search']:focus,
+	form select:focus {
+		border-color: var(--color-primary);
+	}
+
+	form .field {
+		position: relative;
+		height: calc(var(--spacing-4) + var(--typography-6) + 0.2rem);
+	}
+
+	form .field > span {
+		color: #f47174;
+		padding-left: 8px;
+		font-size: var(--typography-6);
+		display: block;
+		margin-top: 0.2rem;
+	}
+
+	form input[type='text']::placeholder,
+	form input[type='search']::placeholder {
+		color: transparent;
+	}
+
+	form input[type='text']:focus::placeholder,
+	form input[type='search']:focus::placeholder {
+		color: transparent;
+	}
+
+	form input[type='text'] + label,
+	form input[type='search'] + label,
+	form select + label {
+		position: absolute;
+		top: 0.5rem;
+		left: 0.5rem;
+		transition: all 0.3s ease;
+		pointer-events: none;
+		background: white;
+		padding: 0px 5px;
+		color: var(--color-tertiary);
+	}
+	form input[type='text']:not(:placeholder-shown) + label,
+	form input[type='text']:focus + label,
+	form input[type='search']:not(:placeholder-shown) + label,
+	form input[type='search']:focus + label,
+	form select[data-option]:not([data-option='']) + label {
+		top: -0.8rem;
+		font-size: 0.8rem;
+		pointer-events: initial;
+		background-color: white;
+		color: var(--color-primary);
+	}
+
+	form input[type='submit'] {
+		background-color: var(--color-secondary);
+		border: 1px solid var(--color-secondary);
+		border-radius: var(--spacing-1);
+		font-size: var(--typography-4);
+		text-align: center;
+		margin: var(--spacing-2) auto;
+		padding: var(--spacing-1) var(--spacing-6);
+		color: var(--color-html);
+	}
+
+	form input[type='search']:focus {
+		border-bottom: none;
+		border-bottom-left-radius: 0;
+		border-bottom-right-radius: 0;
+	}
+
+	form .list__options {
+		display: none;
+		margin-top: -1px;
+		z-index: 2;
+		background-color: white;
+		border: 1px solid var(--color-primary);
+		border-top: none;
+		border-radius: var(--spacing-1);
+		border-top-left-radius: 0;
+		border-top-right-radius: 0;
+	}
+
+	form input[type='search']:focus + label + .list__options {
+		display: block;
+	}
+
+	form .list__option {
+		position: relative;
+		padding: var(--spacing-1) var(--spacing-2);
+	}
+
+	form .list__option:hover {
+		background-color: var(--color-primary);
+		color: white;
+	}
+
+	form input[type='submit']:hover {
+		background-color: var(--color-primary);
+		border: 1px solid var(--color-primary);
+		color: white;
+	}
+
+	/* Radio Group */
+
+	form [type='radio']:checked,
+	form [type='radio']:not(:checked) {
+		position: absolute;
+		left: -9999px;
+	}
+
+	form [type='radio']:checked + label,
+	form [type='radio']:not(:checked) + label {
+		position: relative;
+		padding-left: 28px;
+		cursor: pointer;
+		display: inline-block;
+		width: 100%;
+		height: 100%;
+		display: flex;
+		align-items: center;
+	}
+
+	form [type='radio']:checked + label::before,
+	form [type='radio']:not(:checked) + label::before {
+		content: '';
+		position: absolute;
+		left: 0;
+		top: calc(50% - 9px);
+		width: 18px;
+		height: 18px;
+		border: 1px solid var(--color-secondary);
+		border-radius: 100%;
+		background: #fff;
+	}
+
+	form [type='radio']:checked + label::after,
+	form [type='radio']:not(:checked) + label::after {
+		content: '';
+		position: absolute;
+		left: 3px;
+		top: calc(50% - 6px);
+		width: 12px;
+		height: 12px;
+		border-radius: 100%;
+		background-color: var(--color-primary);
+		-webkit-transition: all 0.2s ease;
+		transition: all 0.2s ease;
+	}
+
+	form [type='radio']:not(:checked) + label:after {
+		opacity: 0;
+		-webkit-transform: scale(0);
+		transform: scale(0);
+	}
+
+	form [type='radio']:checked + label:after {
+		opacity: 1;
+		-webkit-transform: scale(1);
+		transform: scale(1);
+	}
+
+	form .radio__option {
+		height: var(--spacing-6);
+		border: 1px solid transparent;
+		display: flex;
+		align-items: center;
+		padding: 0 var(--spacing-2);
+	}
+
+	form .radio__option + .radio__option {
+		margin-top: var(--spacing-1);
+	}
+
+	form .radio__option:hover {
+		border: 1px solid var(--color-secondary);
+	}
+
+	form [type='radio']:checked ~ .radio_option {
+		border: 2px solid var(--color-primary);
+	}
+
+	/* Switch */
+
+	form input[type='checkbox'] {
+		width: 0;
+		height: 0;
+		visibility: hidden;
+	}
+
+	form input[type='checkbox'] + label {
+		display: inline-block;
+		margin: 0;
+		margin-right: var(--spacing-1);
+		width: var(--spacing-5);
+		height: var(--spacing-2);
+		background-color: lightgrey;
+		border-radius: 100px;
+		position: relative;
+		cursor: pointer;
+		transition: background-color 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+		box-shadow: 0 0 50px #477a85;
+	}
+
+	form input[type='checkbox'] + label::after {
+		content: '';
+		width: calc(1.5 * var(--spacing-2));
+		height: calc(1.5 * var(--spacing-2));
+		background-color: grey;
+		position: absolute;
+		border-radius: 70px;
+		top: calc(-0.25 * var(--spacing-2));
+		left: calc(-0.25 * var(--spacing-2));
+		transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+	}
+
+	form input[type='checkbox']:checked + label {
+		background-color: var(--color-tertiary);
+	}
+
+	form input[type='checkbox']:checked + label:after {
+		left: calc(100% - 1.25 * var(--spacing-2));
+		background-color: var(--color-primary);
+	}
+
+	.box {
+		padding: var(--spacing-2) var(--spacing-3) var(--spacing-6) var(--spacing-3);
+	}
+
+	.inset {
+		padding-left: var(--spacing-2);
+	}
+
+	/* Color
 
 .color__primary {
 	color: var(--color-primary);
@@ -113,9 +399,7 @@ h4 {
 	background-color: var(--color-paper);
 }
 
-.inset {
-  padding-left: var(--spacing-2);
-}
+
 
 
 .grid {
@@ -138,6 +422,3 @@ h4 {
 } 
 */
 </style>
-
-<NavBar />
-<div class="box"><slot></slot></div>

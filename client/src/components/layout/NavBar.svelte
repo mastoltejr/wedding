@@ -4,6 +4,9 @@
 
 <style>
     nav {
+        position: relative;
+        z-index: 2;
+        inset: 0 0 auto 0;
         padding: 0 var(--spacing-4);
         background-color: var(--color-paper);
         box-shadow: 0px 0px 9px 3px rgb(41 41 41 / 18%);
@@ -16,7 +19,7 @@
         display: flex;
         flex-wrap: wrap;
         align-items: center;
-        justify-content: space-between;
+        justify-content: space-around;
         gap: var(--spacing-2);
         padding-inline-start: 0;
         margin: 0;
