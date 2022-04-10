@@ -1,9 +1,21 @@
 <script>
+	import TimeBox from '../components/layout/TimeBox.svelte';
 	import NavBar from '../components/layout/NavBar.svelte';
+	import { onMount } from 'svelte';
+	// let scroll;
+	// let navBarTop;
+	let navBarHeight;
+	onMount(() => {
+		var navbar = document.getElementById('navbar');
+		// navBarTop = navbar.offsetTop;
+		navBarHeight = navbar.offsetHeight;
+	});
 </script>
 
 <NavBar />
-<slot />
+<div style="padding-top: {navBarHeight}px">
+	<slot />
+</div>
 
 <style global>
 	*,
@@ -51,11 +63,15 @@
 		--typography-3: 1.7rem;
 		--typography-2: 2rem;
 		--typography-1: 2.2rem;
-	}
 
+		--typography-fluid-1: clamp(1.28rem, 0.5rem + 2vw, var(--typography-5));
+	}
+	@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+Display&display=swap');
 	html {
 		background-color: var(--color-html);
 		-webkit-tap-highlight-color: transparent;
+		scroll-behavior: smooth;
+		font-family: 'Noto Serif Display', serif;
 	}
 
 	body {
