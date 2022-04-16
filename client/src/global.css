@@ -1,0 +1,82 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+Display:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+@font-face {
+  font-family: Aisyah;
+  src: url('/fonts/Aisyah-Demo.otf') format('opentype');
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* Remove list styles (bullets/numbers) */
+ol,
+ul,
+menu {
+  list-style: none;
+}
+
+/* For images to not be able to exceed their container */
+img {
+  max-width: 100%;
+}
+
+/* removes spacing between cells in tables */
+table {
+  border-collapse: collapse;
+}
+
+a:-webkit-any-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+:root {
+  --color-primary: #75464a;
+  --color-secondary: #aa7c7a;
+  --color-tertiary: #beaba7;
+
+  --color-html: #e8e8e9;
+  --color-background: #f3eeea;
+  --color-paper: #e8d8d4;
+
+  --spacing-1: 0.5rem;
+  --spacing-2: 1rem;
+  --spacing-3: 1.5rem;
+  --spacing-4: 2rem;
+  --spacing-5: 2.5rem;
+  --spacing-6: 3rem;
+
+  --typography-6: 0.8rem;
+  --typography-5: 1rem;
+  --typography-4: 1.5rem;
+  --typography-3: 1.7rem;
+  --typography-2: 2rem;
+  --typography-1: 2.2rem;
+
+  --typography-fluid-1: clamp(1.28rem, 0.5rem + 2vw, var(--typography-5));
+}
+
+html {
+  background-color: var(--color-html);
+  -webkit-tap-highlight-color: transparent;
+  scroll-behavior: smooth;
+  font-family: 'Noto Serif Display', serif;
+}
+
+body {
+  background-color: white;
+  max-width: 1440px;
+  margin: 0px auto;
+  min-height: 100vh;
+}
+
+.box {
+  padding: var(--spacing-2) var(--spacing-3) var(--spacing-6) var(--spacing-3);
+}
+
+.inset {
+  padding-left: var(--spacing-2);
+}
