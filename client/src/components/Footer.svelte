@@ -3,7 +3,7 @@
 
   const location = useLocation();
   let backToHome = false;
-  $: backToHome = $location.pathname === '/saveTheDate';
+  $: backToHome = $location.pathname.startsWith('/saveTheDate');
 </script>
 
 <Link to={backToHome ? '/' : '/saveTheDate'}>

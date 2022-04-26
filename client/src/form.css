@@ -1,7 +1,13 @@
 fieldset {
   margin: var(--spacing-3) 0px;
   border: 0.5px solid var(--color-tertiary);
-  padding: var(--spacing-3) var(--spacing-1);
+  padding: var(--spacing-3) var(--spacing-3);
+}
+
+@media (max-width: 748px) {
+  fieldset {
+    padding: var(--spacing-1) var(--spacing-1);
+  }
 }
 
 legend {
@@ -9,18 +15,28 @@ legend {
   background-color: inherit;
   padding: 0px var(--spacing-3);
   font-size: var(--typography-4);
+  font-weight: 600;
+  color: var(--color-primary);
 }
 
 .form__container {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-2);
+  gap: var(--spacing-4);
 }
 
 .form__row {
   display: grid;
-  grid-gap: var(--spacing-2);
-  grid-auto-flow: row;
+  align-items: center;
+  grid-gap: var(--spacing-4);
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+}
+
+@media (max-width: 748px) {
+  .form__row.shrink {
+    grid-auto-flow: row;
+  }
 }
 
 form label {
@@ -35,16 +51,19 @@ form label span {
 }
 
 form input[type='text'],
+form input[type='tel'],
 form input[type='search'],
+form select,
 .stolteInputClassName form select {
   width: 100%;
   box-sizing: border-box;
-  height: var(--spacing-4);
+  height: var(--spacing-6);
   padding: 0 var(--spacing-1);
   outline: none;
   border: 1px solid var(--color-tertiary);
-  border-radius: var(--spacing-1);
+  /* border-radius: var(--spacing-1); */
   color: var(--color-primary);
+  font-size: 1.1rem;
 }
 
 form select {
@@ -52,6 +71,7 @@ form select {
 }
 
 form input[type='text']:focus,
+form input[type='tel']:focus,
 form input[type='search']:focus,
 form select:focus,
 .stolteInputClassName:focus {
@@ -64,7 +84,9 @@ form .field {
 }
 
 form .field > span {
-  color: #f47174;
+  color: var(--color-primary);
+  font-weight: 800;
+  /* color: #f47174; */
   padding-left: 8px;
   font-size: var(--typography-6);
   display: block;
@@ -72,29 +94,35 @@ form .field > span {
 }
 
 form input[type='text']::placeholder,
+form input[type='tel']::placeholder,
 form input[type='search']::placeholder {
   color: transparent;
 }
 
 form input[type='text']:focus::placeholder,
+form input[type='tel']:focus::placeholder,
 form input[type='search']:focus::placeholder {
   color: transparent;
 }
 
 form input[type='text'] + label,
+form input[type='tel'] + label,
 form input[type='search'] + label,
 form select + label {
   position: absolute;
-  top: 0.5rem;
+  top: 0.9rem;
   left: 0.5rem;
   transition: all 0.3s ease;
   pointer-events: none;
   background: white;
   padding: 0px 5px;
   color: var(--color-tertiary);
+  font-size: 0.9rem;
 }
 form input[type='text']:not(:placeholder-shown) + label,
 form input[type='text']:focus + label,
+form input[type='tel']:not(:placeholder-shown) + label,
+form input[type='tel']:focus + label,
 form input[type='search']:not(:placeholder-shown) + label,
 form input[type='search']:focus + label,
 form select[data-option]:not([data-option='']) + label {
@@ -237,13 +265,13 @@ form [type='radio']:checked ~ .radio_option {
 
 /* Switch */
 
-form input[type='checkbox'] {
+.switch {
   width: 0;
   height: 0;
   visibility: hidden;
 }
 
-form input[type='checkbox'] + label {
+.switch + label {
   display: inline-block;
   margin: 0;
   margin-right: var(--spacing-1);
@@ -257,7 +285,7 @@ form input[type='checkbox'] + label {
   box-shadow: 0 0 50px #477a85;
 }
 
-form input[type='checkbox'] + label::after {
+.switch + label::after {
   content: '';
   width: calc(1.5 * var(--spacing-2));
   height: calc(1.5 * var(--spacing-2));
@@ -269,11 +297,54 @@ form input[type='checkbox'] + label::after {
   transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-form input[type='checkbox']:checked + label {
+.switch:checked + label {
   background-color: var(--color-tertiary);
 }
 
-form input[type='checkbox']:checked + label:after {
+.switch:checked + label:after {
   left: calc(100% - 1.25 * var(--spacing-2));
   background-color: var(--color-primary);
+}
+
+.buttongroup {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: var(--spacing-1);
+}
+
+.buttongroup .button {
+  margin: 4px;
+
+  border-radius: 4px;
+  border: 1px solid var(--color-tertiary);
+  overflow: hidden;
+}
+
+.buttongroup .button label {
+  margin: 0px;
+}
+
+.buttongroup .button label span {
+  text-align: center;
+  padding: var(--spacing-1) var(--spacing-3);
+  background-color: white;
+  display: block;
+  cursor: pointer;
+}
+
+.buttongroup .button label input {
+  position: absolute;
+  display: none;
+  color: #fff !important;
+}
+/* selects all of the text within the input element and changes the color of the text */
+.buttongroup .button label input + span {
+  color: var(--color-primary);
+}
+
+/* This will declare how a selected input will look giving generic properties */
+.buttongroup .button input:checked + span {
+  color: #ffffff;
+  background-color: var(--color-primary);
+  text-shadow: 0 0 6px rgba(0, 0, 0, 0.8);
 }

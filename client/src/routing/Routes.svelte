@@ -1,6 +1,5 @@
 <script lang="ts">
   import { Route } from 'svelte-navigator';
-  import { onMount } from 'svelte';
   import PrivateRoute from './PrivateRoute.svelte';
 
   import Login from '../pages/Login.svelte';
@@ -8,14 +7,9 @@
   import ScrollToFragment from '../components/ScrollToFragment.svelte';
   import SaveTheDate from '../pages/SaveTheDate.svelte';
   import UserQuery from '../components/UserQuery.svelte';
-
-  let navBarHeight;
-  onMount(() => {
-    navBarHeight = document.getElementById('navbar').offsetHeight;
-  });
 </script>
 
-<main style="padding-top: {navBarHeight}px">
+<main style="padding-top: 64px">
   <ScrollToFragment>
     <Route path="/">
       <Home />

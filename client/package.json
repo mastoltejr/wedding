@@ -12,7 +12,8 @@
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^1.0.0-next.30",
     "@tsconfig/svelte": "^2.0.1",
-    "simple-svelte-autocomplete": "^2.3.9",
+    "@types/autosuggest-highlight": "^3.2.0",
+    "@types/yup": "^0.29.13",
     "svelte": "^3.44.0",
     "svelte-check": "^2.2.7",
     "svelte-forms-lib": "^2.0.1",
@@ -23,11 +24,13 @@
   },
   "dependencies": {
     "@splidejs/svelte-splide": "^0.2.1",
-    "@sveltestack/svelte-query": "^1.6.0",
+    "autosuggest-highlight": "^3.2.1",
     "axios": "^0.26.1",
     "broadcast-channel": "^4.10.0",
     "date-fns": "^2.28.0",
     "googleapis": "^100.0.0",
-    "svelte-navigator": "^3.1.5"
+    "svelte-imask": "^1.2.0",
+    "svelte-navigator": "^3.1.5",
+    "yup": "^0.32.11"
   }
 }

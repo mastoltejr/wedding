@@ -55,12 +55,12 @@ export interface Group {
   id: number;
   groupCode: string;
   family: string;
-  paperless: boolean;
+  paperInvite: boolean;
   address: string;
   address2: string;
   city: string;
   state: string;
-  zip: number;
+  zip: string;
   country: string;
   mailShower1Invite: boolean;
   mailShower2Invite: boolean;
@@ -71,7 +71,6 @@ export interface Group {
   primaryPerson: string;
   secondaryPerson: string;
   groupTitle: string;
-  others: string[];
 }
 
 export interface InviteGroup
@@ -174,17 +173,17 @@ const personDbKeys: Key[] = [
   { key: 'fullName', type: 'string' }
 ];
 
-const groupRange = 'Group_db!A2:T';
+const groupRange = 'Group_db!A2:S';
 const groupDbKeys: Key[] = [
   { key: 'id', type: 'number' },
   { key: 'groupCode', type: 'string' },
   { key: 'family', type: 'string' },
-  { key: 'paperless', type: 'boolean' },
+  { key: 'paperInvite', type: 'boolean' },
   { key: 'address', type: 'string' },
   { key: 'address2', type: 'string' },
   { key: 'city', type: 'string' },
   { key: 'state', type: 'string' },
-  { key: 'zip', type: 'number' },
+  { key: 'zip', type: 'string' },
   { key: 'country', type: 'string' },
   { key: 'mailShower1Invite', type: 'boolean' },
   { key: 'mailShower2Invite', type: 'boolean' },
@@ -194,8 +193,7 @@ const groupDbKeys: Key[] = [
   { key: 'lastUpdated', type: 'date' },
   { key: 'primaryPerson', type: 'string' },
   { key: 'secondaryPerson', type: 'string' },
-  { key: 'groupTitle', type: 'string' },
-  { key: 'others', type: 'strings' }
+  { key: 'groupTitle', type: 'string' }
 ];
 
 export const sheetToDB = (data: Array<string[]>, sheet: Sheet = 'Person_db') =>

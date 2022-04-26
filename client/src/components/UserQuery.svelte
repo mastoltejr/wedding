@@ -1,26 +1,22 @@
 <script lang="ts">
-  import AutoComplete from 'simple-svelte-autocomplete';
-  import { navigate } from 'svelte-navigator';
-  import { getNames } from '../queries';
-  let selectedUser;
-
-  if (!!selectedUser) {
-    alert(selectedUser);
-  }
+  import AutoComplete from '../components/AutoComplete.svelte';
 </script>
 
-<AutoComplete
-  searchFunction={getNames}
-  bind:selectedItem={selectedUser}
-  labelFieldName="fullName"
-  valueFieldName="code"
-  delay={200}
-  localFiltering={false}
-  placeholder="Search the Guest List..."
-  showLoadingIndicator={true}
-  noInputStyles={true}
-  inputClassName="userQuery"
-  dropdownClassName="stolteDropdownClassName"
-  required
-  hideArrow={true}
-/>
+<div class="box userQuery">
+  <div class="search">
+    <AutoComplete />
+  </div>
+</div>
+
+<style>
+  .userQuery {
+    padding-top: 6rem;
+    height: calc(100vh - 64px - 215px);
+  }
+
+  .search {
+    position: relative;
+    width: 300px;
+    margin: auto;
+  }
+</style>

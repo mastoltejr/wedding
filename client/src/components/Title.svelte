@@ -7,7 +7,6 @@
       if (entries.length === 0) return;
       const { isIntersecting } = entries[0];
       intersect = isIntersecting;
-      console.log(isIntersecting);
     };
 
     let observer = new IntersectionObserver(callback, {
@@ -27,6 +26,7 @@
   .title {
     position: relative;
     display: inline-block;
+    font-size: var(--typography-1);
     color: var(--color-primary);
   }
 

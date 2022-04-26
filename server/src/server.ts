@@ -8,8 +8,9 @@ import express, {
 } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import { People, Person, readData, slimObjects } from './googleUtil';
+import { Group, People, Person, readData, slimObjects } from './googleUtil';
 import { escapeRegExp } from './util';
+import { google } from 'googleapis';
 
 dotenv.config();
 
@@ -38,6 +39,32 @@ app.get('/names', async (req, res) => {
   );
 
   return res.status(200).send(slimData);
+});
+
+app.get('/guestList', async (req, res) => {
+  const people = (await readData('Person_db')) as People;
+  const keys = ['code', 'fullName'] as Array<keyof Person>;
+  const slimData = slimObjects(people, keys);
+  return res.status(200).send(slimData);
+});
+
+app.get('/userInfo', async (req, res) => {
+  const { userCode } = req.query;
+  const people = (await readData('Person_db')) as People;
+  const groups = (await readData('Group_db')) as Group[];
+  const person = people.find((p) => p.code === userCode);
+  if (person === undefined) return res.status(400).send('Person not found');
+
+  const group = groups.find((g) => g.groupCode === person.groupCode) ?? {};
+  const peopleInGroup = people.filter(
+    (p) => p.groupCode === person.groupCode && p.code !== person.code
+  );
+
+  return res.status(200).send({
+    person,
+    group,
+    peopleInGroup
+  });
 });
 
 const expressPort = process.env.EXPRESS_PORT || 5000;

@@ -33,6 +33,10 @@ a:-webkit-any-link {
   color: inherit;
 }
 
+*:focus-visible {
+  outline: none !important;
+}
+
 :root {
   --color-primary: #75464a;
   --color-secondary: #aa7c7a;
@@ -40,7 +44,7 @@ a:-webkit-any-link {
 
   --color-html: #e8e8e9;
   --color-background: #f3eeea;
-  --color-paper: #e8d8d4;
+  --color-paper: #f3eae8;
 
   --spacing-1: 0.5rem;
   --spacing-2: 1rem;
@@ -56,7 +60,7 @@ a:-webkit-any-link {
   --typography-2: 2rem;
   --typography-1: 2.2rem;
 
-  --typography-fluid-1: clamp(1.28rem, 0.5rem + 2vw, var(--typography-5));
+  --typography-fluid-1: clamp(1.1rem, 0.5rem + 2vw, var(--typography-5));
 }
 
 html {

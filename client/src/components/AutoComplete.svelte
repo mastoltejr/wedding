@@ -1,0 +1,138 @@
+<script lang="ts">
+  import AutoCompleteItem from './AutoCompleteItem.svelte';
+  import { onMount } from 'svelte';
+  import { getGuestList, Guest, GuestList, escapeRegExp } from '../queries';
+  import parse from 'autosuggest-highlight/parse';
+  import match from 'autosuggest-highlight/match';
+  import { navigate } from 'svelte-navigator';
+
+  let guestList: GuestList = [];
+
+  onMount(() => {
+    getGuestList().then((data) => {
+      guestList = data;
+    });
+  });
+
+  /* FILTERING countres DATA BASED ON INPUT */
+  let filteredGuestList: GuestList = [];
+  // $: console.log(filteredCountries)
+
+  const filterGuestList = () => {
+    const searchRegex = new RegExp(escapeRegExp(inputValue), 'i');
+    filteredGuestList = !!inputValue
+      ? guestList.filter(({ fullName }) => searchRegex.test(fullName))
+      : [];
+  };
+
+  /* HANDLING THE INPUT */
+  let searchInput; // use with bind:this to focus element
+  let inputValue: string = '';
+  let currentIndex: number | null = null;
+
+  $: if (!!!inputValue) {
+    filteredGuestList = [];
+    currentIndex = null;
+  }
+
+  const clearInput = () => {
+    inputValue = '';
+    searchInput.focus();
+  };
+
+  const setInputVal = (guest: Guest) => {
+    inputValue = guest.fullName;
+    filteredGuestList = [];
+    currentIndex = null;
+    document.querySelector<HTMLInputElement>('#guestList-input').focus();
+    navigate(`/saveTheDate/${guest.code}`);
+  };
+
+  const submitValue = () => {
+    if (inputValue) {
+      console.log(`${inputValue} is submitted!`);
+      setTimeout(clearInput, 1000);
+    } else {
+      alert("You didn't type anything.");
+    }
+  };
+
+  const makeMatchBold = (str: string) => {
+    const matches = match(str, inputValue, { insideWords: true });
+    const parts = parse(str, matches);
+    return parts.reduce(
+      (s, { text, highlight }) =>
+        s + (highlight ? `<strong>${text}</strong>` : text),
+      ''
+    );
+  };
+
+  const navigateList = (e) => {
+    if (e.key === 'ArrowDown' && currentIndex <= filteredGuestList.length - 1) {
+      currentIndex === null ? (currentIndex = 0) : (currentIndex += 1);
+    } else if (e.key === 'ArrowUp' && currentIndex !== null) {
+      currentIndex === 0
+        ? (currentIndex = filteredGuestList.length - 1)
+        : (currentIndex -= 1);
+    } else if (e.key === 'Enter') {
+      setInputVal(filteredGuestList[currentIndex]);
+    } else {
+      return;
+    }
+  };
+</script>
+
+<svelte:window on:keydown={navigateList} />
+
+<div class="autocomplete">
+  <input
+    id="guestList-input"
+    type="text"
+    placeholder="Search the guest list..."
+    bind:this={searchInput}
+    bind:value={inputValue}
+    on:input={filterGuestList}
+  />
+</div>
+
+<!-- FILTERED LIST OF COUNTRIES -->
+{#if filteredGuestList.length > 0}
+  <ul id="autocomplete-items-list">
+    {#each filteredGuestList as guest, i}
+      <AutoCompleteItem
+        itemLabel={makeMatchBold(guest.fullName)}
+        highlighted={i === currentIndex}
+        on:click={() => setInputVal(guest)}
+      />
+    {/each}
+  </ul>
+{/if}
+
+<style>
+  div.autocomplete {
+    /*the container must be positioned relative:*/
+    position: relative;
+    display: inline-block;
+    width: 300px;
+  }
+  input {
+    padding: 10px;
+    font-size: var(--typography-6);
+    margin: 0;
+  }
+  input[type='text'] {
+    width: 100%;
+  }
+
+  #autocomplete-items-list {
+    position: relative;
+    margin: 0;
+    padding: 0;
+    top: 0;
+    width: 297px;
+    border: 1px solid #ddd;
+    background-color: #ddd;
+    max-height: 40vh;
+    overflow-y: auto;
+  }
+</style>

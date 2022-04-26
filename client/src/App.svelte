@@ -11,6 +11,7 @@
     const userCode = window.localStorage.getItem('userCode');
     if (userCode !== null) {
       const data = await getUserData(userCode);
+      console.log(data);
       $user = data;
     } else {
       console.log('userCode is null');

@@ -3,6 +3,9 @@
   import Slideshow from '../components/Slideshow.svelte';
   import TimeBox from '../components/TimeBox.svelte';
   import Title from '../components/Title.svelte';
+  import WhenWhere from '../components/home/WhenWhere.svelte';
+  import RegistryGrid from '../components/home/RegistryGrid.svelte';
+  import LinkText from '../components/LinkText.svelte';
 
   let images = [
     '/images/sacredOaks.jpeg',
@@ -15,11 +18,40 @@
   <div class="background__image" id="hero">
     <div>
       <span id="title">Bianca & Michael</span>
-      <span id="info">March 25th, 2023 | Dripping Springs TX</span>
       <div id="saveTheDate">Save The Date</div>
     </div>
   </div>
 </Link>
+<WhenWhere />
+<TimeBox />
+<div class="section" id="#travel">
+  <h5 style="color: #555">Getting to Dripping Springs</h5>
+  <h2><Title>Travel & Accomodations</Title></h2>
+  <p class="inset">
+    Lorem ipsum dolor sit amet consectetur adipisicing elit. Laboriosam
+    obcaecati sed eius, ea suscipit, fuga neque assumenda cum consectetur iusto
+    eos! Ut eaque vitae quod minus quia porro optio neque magnam quas, vel iste
+    cum voluptatum accusantium ipsam autem aut suscipit nam earum atque dolores
+    error molestiae dolorum nobis. Minima asperiores optio recusandae aspernatur
+    totam facere quia cum, voluptatibus beatae laboriosam doloremque! Fugit
+    maiores perferendis nam obcaecati temporibus quae rerum repellat vero ab,
+    mollitia doloribus facere nostrum eius nisi. Repudiandae iure distinctio
+    dolorem quam, pariatur temporibus ratione deleniti nesciunt vitae laboriosam
+    voluptatem tempore. Commodi dolor sapiente eius sint! Maiores, itaque.
+  </p>
+  <Link to="/ourStory"><LinkText>Read more</LinkText></Link>
+</div>
+<Slideshow {images} />
+<div class="section" id="registry">
+  <h5 style="color: #555">Where to shop</h5>
+  <h2><Title>Our Registry</Title></h2>
+  <p class="inset">
+    We have wedding registries set up at the following stores.
+  </p>
+  <RegistryGrid />
+  <Link to="/registry"><LinkText>Explore the Registry</LinkText></Link>
+</div>
+<Slideshow {images} />
 <div class="section" id="ourStory">
   <h5 style="color: #555">For those who don't know</h5>
   <h2><Title>Our Story</Title></h2>
@@ -30,17 +62,8 @@
     couple we've been are together for 8 years now & we're getting married next
     year.
   </p>
-  <Link to="/ourStory"><span>Read more</span></Link>
+  <Link to="/ourStory"><LinkText>Read more</LinkText></Link>
 </div>
-<Slideshow {images} />
-<div class="section" id="travel">
-  Lorem ipsum dolor sit amet consectetur adipisicing elit. Cumque inventore
-  atque incidunt pariatur odit, sed reiciendis eos corrupti laudantium nobis
-  laboriosam illum magni ipsa deserunt molestias debitis quo similique facilis
-  molestiae neque eum sapiente doloremque? Autem amet consequuntur explicabo ad
-  eos obcaecati accusantium optio tenetur repellat omnis? Quam, nihil id.
-</div>
-<TimeBox />
 
 <style>
   .background__image {
@@ -85,10 +108,6 @@
     font-size: clamp(3.5rem, 10vw, 10rem);
     letter-spacing: 0.875rem;
     font-family: 'Aisyah';
-  }
-
-  #hero #info {
-    font-weight: 600;
   }
 
   #saveTheDate {

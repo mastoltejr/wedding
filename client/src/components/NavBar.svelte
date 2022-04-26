@@ -51,11 +51,13 @@
     <div class="bar2" />
     <div class="bar3" />
     <ul class="mobile-menu">
-      <li><a href="/home">Home</a></li>
-      <li><a href="/products">Products</a></li>
-      <li><a href="/about">About</a></li>
-      <li id="login"><a href="/login">Login</a></li>
-      <li id="signup"><a href="/signup">Signup</a></li>
+      <li><Link to="/#hero"><span class="link">Home</span></Link></li>
+      <li><Link to="/#ourStory"><span class="link">Our Story</span></Link></li>
+      <li><Link to="/#travel"><span class="link">Getting Here</span></Link></li>
+      <li><Link to="/#registry"><span class="link">Registry</span></Link></li>
+      <li>
+        <Link to="/#invite"><span class="link">Save The Date</span></Link>
+      </li>
     </ul>
   </div>
 </header>
@@ -88,6 +90,7 @@
     gap: var(--spacing-2);
     padding-inline-start: 0;
     margin: 0;
+    height: 100%;
   }
 
   li {

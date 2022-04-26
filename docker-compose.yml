@@ -1,0 +1,32 @@
+version: '3'
+
+services:
+  wedding_server:
+    restart: unless-stopped
+    build: server
+    dockerfile: Dockerfile
+    networks:
+      stoltenet:
+        aliases:
+          - wedding_server
+    ports:
+      - '5005:5001'
+
+  wedding_client:
+    restart: unless-stopped
+    build: client
+    dockerfile: Dockerfile
+    links:
+      - wedding_server
+    networks:
+      stoltenet:
+        aliases:
+          - wedding_client
+    ports:
+      - '3005:80'
+    depends_on:
+      - wedding_server
+
+networks:
+  stoltenet:
+    name: stoltenet
