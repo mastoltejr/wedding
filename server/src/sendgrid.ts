@@ -13,7 +13,7 @@ export interface SendEmailProps {
 }
 
 const templateIds: Record<EmailType, string> = {
-  saveTheDate: 'd-ed6f03d6b457481787d5b8e31162f9b1',
+  saveTheDate: String(process.env.SENDGRID_SAVETHEDATE_TEMPLATE),
   rsvp: '',
   registry: '',
   finalCountdown: ''
