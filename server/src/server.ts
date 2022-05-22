@@ -1,16 +1,20 @@
 import express, {
-  Request,
-  Response,
-  NextFunction,
   Application as ExpressApplication,
-  RequestHandler,
-  application
+  RequestHandler
 } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import { Group, People, Person, readData, slimObjects } from './googleUtil';
+import {
+  AppData,
+  Group,
+  People,
+  Person,
+  readData,
+  slimObjects,
+  writeData
+} from './googleUtil';
 import { escapeRegExp } from './util';
-import { google } from 'googleapis';
+import { sendEmail, SendEmailProps } from './sendgrid';
 
 dotenv.config();
 
@@ -24,12 +28,29 @@ app.use(
   })
 );
 
-app.get('/', async (req, res) => {
+const denyOptions: RequestHandler = (req, res, next) => {
+  if (req.method == 'OPTIONS') {
+    res.set('Access-Control-Allow-Origin', '*');
+    res.set('Access-Control-Allow-Headers', 'Content-Type');
+    res.status(204).send('');
+  }
+  next();
+};
+
+const logger: RequestHandler = (req, _, next) => {
+  console.log('================================');
+  console.log(`${req.route.path}: ${new Date()}`);
+  console.log(req.method === 'POST' ? req.body : req.query);
+  console.log('--------------------------------');
+  next();
+};
+
+app.get('/', logger, async (_, res) => {
   const data = await readData();
   res.send(data);
 });
 
-app.get('/names', async (req, res) => {
+app.get('/names', logger, async (req, res) => {
   const { partialName } = req.query;
   const people = (await readData('Person_db')) as People;
   const keys = ['code', 'fullName'] as Array<keyof Person>;
@@ -41,14 +62,14 @@ app.get('/names', async (req, res) => {
   return res.status(200).send(slimData);
 });
 
-app.get('/guestList', async (req, res) => {
+app.get('/guestList', logger, async (_, res) => {
   const people = (await readData('Person_db')) as People;
   const keys = ['code', 'fullName'] as Array<keyof Person>;
   const slimData = slimObjects(people, keys);
   return res.status(200).send(slimData);
 });
 
-app.get('/userInfo', async (req, res) => {
+app.get('/userInfo', logger, async (req, res) => {
   const { userCode } = req.query;
   const people = (await readData('Person_db')) as People;
   const groups = (await readData('Group_db')) as Group[];
@@ -65,6 +86,23 @@ app.get('/userInfo', async (req, res) => {
     group,
     peopleInGroup
   });
+});
+
+app.post('/userInfo', denyOptions, logger, async (req, res) => {
+  const { person, group, peopleInGroup } = req.body as AppData;
+  const result = await writeData([person, group, ...peopleInGroup]);
+  return res.status(result ? 200 : 400).send(result);
+});
+
+app.post('/sendEmail', denyOptions, logger, async (req, res) => {
+  const { person, group, peopleInGroup, emailType } = req.body as AppData &
+    Pick<SendEmailProps, 'emailType'>;
+  sendEmail({
+    people: [person, ...peopleInGroup],
+    group: group,
+    emailType: emailType
+  });
+  res.status(200).send(true);
 });
 
 const expressPort = process.env.EXPRESS_PORT || 5000;

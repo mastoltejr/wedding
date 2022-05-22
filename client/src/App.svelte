@@ -5,17 +5,11 @@
   import Footer from './components/Footer.svelte';
   import { user } from './stores/user';
   import { onMount } from 'svelte';
-  import { getUserData } from './queries';
+  import { getUserData } from './stores/user';
 
   onMount(async () => {
     const userCode = window.localStorage.getItem('userCode');
-    if (userCode !== null) {
-      const data = await getUserData(userCode);
-      console.log(data);
-      $user = data;
-    } else {
-      console.log('userCode is null');
-    }
+    !!userCode && getUserData(userCode);
   });
 </script>
 

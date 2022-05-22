@@ -1,4 +1,5 @@
 import { writable } from 'svelte/store';
+import axios from 'axios';
 
 export interface Person {
   id: number;
@@ -47,7 +48,7 @@ export interface Group {
   id: number;
   groupCode: string;
   family: string;
-  paperInvite: boolean;
+  eInvite: boolean;
   address: string;
   address2: string;
   city: string;
@@ -71,8 +72,32 @@ export interface UserData {
   peopleInGroup: Person[];
 }
 
-export const user = writable<Partial<UserData>>({
+type UserStore = Partial<UserData> & { doNotSync?: boolean };
+
+export const user = writable<UserStore>({
   person: undefined,
   group: undefined,
   peopleInGroup: []
 });
+
+export const getUserData = (userCode: string): Promise<boolean> => {
+  return axios
+    .get<UserData>('http://localhost:5001' + '/userInfo', {
+      params: { userCode }
+    })
+    .then(({ data }) => {
+      console.log('Data Recieved', data);
+      user.set({ ...data, doNotSync: true });
+      return true;
+    });
+};
+
+const syncUserToDB = (data: UserStore) => {
+  if (!!data.person && !!!data.doNotSync) {
+    console.log('SYNCING TO DB', data);
+    axios.post<boolean>('http://localhost:5001' + '/userInfo', {
+      ...data
+    });
+  }
+};
+user.subscribe(syncUserToDB);

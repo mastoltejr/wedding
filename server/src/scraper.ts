@@ -2,6 +2,7 @@ import * as cheerio from 'cheerio';
 import puppeteer from 'puppeteer';
 import https from 'https';
 import { nanoid } from 'nanoid';
+import { writeFile } from 'fs';
 
 interface RegistryGift {
   storeID: number;
@@ -143,8 +144,6 @@ const getAmazonRegistry = async () => {
   return gifts;
 };
 
-// TODO add in contributable flag
-
 const getCrateAndBarrelRegistry = async () => {
   const id = nanoid(4);
   console.time('crateAndBarrel' + id);
@@ -234,12 +233,108 @@ const getCrateAndBarrelRegistry = async () => {
   return gifts;
 };
 
+const getBedBathAndBeyondRegistry = async () => {
+  const id = nanoid(4);
+  console.time('bedbathbeyond' + id);
+
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
+  await page.goto(
+    'https://www.bedbathandbeyond.com/store/giftregistry/viewregistryguest/551415067?selectedRLVFilters=_recommended',
+    {
+      waitUntil: 'networkidle2'
+    }
+  );
+
+  const html = await page.content();
+  if (!!!html) return [];
+
+  const $ = cheerio.load(html);
+
+  writeFile('html.txt', html, 'utf-8', () => console.log('wrote file'));
+
+  const attrCollector = async (
+    container: cheerio.Element
+  ): Promise<RegistryGift> => {
+    console.log('here');
+    const image = $(container).find('img').attr('src') ?? '';
+    const title = $(container).find('.list-item-title-button').text();
+    const sku = $(container)
+      .find('.list-item-sku span')
+      .text()
+      .replace(/[^0-9]/g, '');
+
+    const productPage = `/${title
+      .replace(/[®",]/g, '')
+      .replace(/&/g, '-and-')
+      .replace(/\s/g, '-')
+      .replace(/-{2,}/g, '-')}/s${sku}`.toLowerCase();
+
+    const productPageHtml = await getHtml(
+      'www.crateandbarrel.com',
+      productPage.toLowerCase()
+    )
+      .then((data) => data)
+      .catch(() => '');
+
+    const $2 = cheerio.load(productPageHtml);
+    let categories: string[] = [];
+    $2('.breadcrumb-list .text-xs').each((_, a) =>
+      categories.push($2(a).text())
+    );
+
+    const price = Number(
+      $(container).find('.list-item-price').first().text().replace(/[$,]+/g, '')
+    );
+
+    const wants = Number(
+      $(container).find('.item-wants').text().replace(/[^\d]/g, '')
+    );
+
+    const has = Number(
+      $(container).find('.item-has').text().replace(/[^\d]/g, '')
+    );
+
+    const gift: RegistryGift = {
+      storeID: 1,
+      categories: categories.slice(0, 1),
+      title: title.slice(0, 5),
+      price,
+      wants,
+      has,
+      contributable: false, //shareables.some((s) => image.startsWith(s)),
+      image: image.slice(0, 5),
+      productPage: `https://www.crateandbarrel.com${productPage}`.slice(0, 5)
+    };
+
+    return gift;
+  };
+
+  let promises: Promise<RegistryGift>[] = [];
+  console.log(
+    'item',
+    $('div.GuestViewerLayout-inline_7qKC').attr('data-locator')
+  );
+  await $('div[data-locator=guestViewItemsSection]')
+    .find('.grid-x')
+    .each((_, container) => promises.push(attrCollector(container)));
+
+  const gifts: RegistryGifts = await Promise.all(promises).catch(() => []);
+
+  console.timeEnd('bedbathbeyond' + id);
+  return gifts;
+};
+
+// https://www.bedbathandbeyond.com/store/giftregistry/viewregistryguest/551415067?eventType=Wedding
+
 console.log('running');
 console.time('topLevel');
-Promise.all([getCrateAndBarrelRegistry(), getAmazonRegistry()]).then(
-  (results) => {
-    const gifts = results.flat();
-    console.timeEnd('topLevel');
-    console.table(gifts);
-  }
-);
+Promise.all([
+  // getCrateAndBarrelRegistry(),
+  // getAmazonRegistry(),
+  getBedBathAndBeyondRegistry()
+]).then((results) => {
+  const gifts = results.flat().filter((g) => g.wants > 0);
+  console.timeEnd('topLevel');
+  console.table(gifts);
+});

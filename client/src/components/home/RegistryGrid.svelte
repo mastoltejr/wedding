@@ -94,20 +94,4 @@
     top: 0;
     width: 100%;
   }
-
-  .titleWrapper {
-    bottom: 0;
-    display: flex;
-    left: 0;
-    position: absolute;
-    width: 100%;
-  }
-
-  .title {
-    display: block;
-    margin: 8px auto;
-    text-transform: none !important;
-    padding-bottom: 10px;
-    padding-top: 10px;
-  }
 </style>

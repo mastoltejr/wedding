@@ -29,13 +29,15 @@
     content: '';
     position: absolute;
     width: 24px;
-    opacity: 0;
-    right: -8px;
+    top: calc(50% - 4px);
+    right: -19px;
     height: 10px;
-    bottom: -12px;
     clip-path: polygon(75% 0%, 100% 50%, 75% 100%, 65% 100%, 90% 50%, 65% 0%);
     background-color: var(--color-primary);
-    transition: opacity 0.5s;
+    /* opacity: 0; */
+    /* bottom: -12px; */
+    /* right: -8px; */
+    /* transition: opacity 0.5s; */
   }
 
   .title:hover::after {

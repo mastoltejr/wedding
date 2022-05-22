@@ -39,8 +39,25 @@ a:-webkit-any-link {
 
 :root {
   --color-primary: #75464a;
+  --color-primary-hs: 355, 25%;
   --color-secondary: #aa7c7a;
   --color-tertiary: #beaba7;
+
+  --color-error-light: #e57373;
+  --color-error: #f44336;
+  --color-error-dark: #ce0909;
+
+  --color-warning-light: #ffb74d;
+  --color-warning: #ff9800;
+  --color-warning-dark: #f57c00;
+
+  --color-info-light: #64b5f6;
+  --color-info: #2196f3;
+  --color-info-dark: #1976d2;
+
+  --color-success-light: #81c784;
+  --color-success: #4caf50;
+  --color-success-dark: #388e3c;
 
   --color-html: #e8e8e9;
   --color-background: #f3eeea;
@@ -83,4 +100,8 @@ body {
 
 .inset {
   padding-left: var(--spacing-2);
+}
+
+.color__primary {
+  color: var(--color-primary);
 }

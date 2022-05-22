@@ -1,5 +1,5 @@
 import axios from 'axios';
-import type { UserData, Person } from './stores/user';
+import type { Person } from './stores/user';
 
 export const slimObject = <T extends Object, K extends keyof T>(
   object: T,
@@ -30,13 +30,16 @@ export const getGuestList = async (): Promise<GuestList> => {
     .catch(() => []);
 };
 
-export const getUserData = async (userCode: string): Promise<UserData> => {
-  return await axios
-    .get<UserData>('http://localhost:5001' + '/userInfo', {
-      params: { userCode }
-    })
-    .then(({ data }) => data);
-};
-
 export const escapeRegExp = (value: string) =>
   value.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
+
+export const sendEmail = (
+  data: any,
+  emailType: 'saveTheDate' | 'rsvp' | 'registry' | 'finalCountdown'
+) => {
+  console.log('sendEmail', data, emailType);
+  axios.post('http://localhost:5001' + '/sendEmail', {
+    ...data,
+    emailType
+  });
+};

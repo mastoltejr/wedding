@@ -6,7 +6,11 @@
   import match from 'autosuggest-highlight/match';
   import { navigate } from 'svelte-navigator';
 
+  export let path: string;
   let guestList: GuestList = [];
+  let searchInput;
+  let inputValue: string = '';
+  let currentIndex: number | null = null;
 
   onMount(() => {
     getGuestList().then((data) => {
@@ -14,9 +18,7 @@
     });
   });
 
-  /* FILTERING countres DATA BASED ON INPUT */
   let filteredGuestList: GuestList = [];
-  // $: console.log(filteredCountries)
 
   const filterGuestList = () => {
     const searchRegex = new RegExp(escapeRegExp(inputValue), 'i');
@@ -25,36 +27,12 @@
       : [];
   };
 
-  /* HANDLING THE INPUT */
-  let searchInput; // use with bind:this to focus element
-  let inputValue: string = '';
-  let currentIndex: number | null = null;
-
-  $: if (!!!inputValue) {
-    filteredGuestList = [];
-    currentIndex = null;
-  }
-
-  const clearInput = () => {
-    inputValue = '';
-    searchInput.focus();
-  };
-
   const setInputVal = (guest: Guest) => {
     inputValue = guest.fullName;
     filteredGuestList = [];
     currentIndex = null;
     document.querySelector<HTMLInputElement>('#guestList-input').focus();
-    navigate(`/saveTheDate/${guest.code}`);
-  };
-
-  const submitValue = () => {
-    if (inputValue) {
-      console.log(`${inputValue} is submitted!`);
-      setTimeout(clearInput, 1000);
-    } else {
-      alert("You didn't type anything.");
-    }
+    navigate(`/${path}/${guest.code}`);
   };
 
   const makeMatchBold = (str: string) => {
@@ -80,6 +58,11 @@
       return;
     }
   };
+
+  $: if (!!!inputValue) {
+    filteredGuestList = [];
+    currentIndex = null;
+  }
 </script>
 
 <svelte:window on:keydown={navigateList} />
@@ -88,25 +71,23 @@
   <input
     id="guestList-input"
     type="text"
-    placeholder="Search the guest list..."
+    placeholder="My name is..."
     bind:this={searchInput}
     bind:value={inputValue}
     on:input={filterGuestList}
   />
+  {#if filteredGuestList.length > 0}
+    <ul id="autocomplete-items-list">
+      {#each filteredGuestList as guest, i}
+        <AutoCompleteItem
+          itemLabel={makeMatchBold(guest.fullName)}
+          highlighted={i === currentIndex}
+          on:click={() => setInputVal(guest)}
+        />
+      {/each}
+    </ul>
+  {/if}
 </div>
-
-<!-- FILTERED LIST OF COUNTRIES -->
-{#if filteredGuestList.length > 0}
-  <ul id="autocomplete-items-list">
-    {#each filteredGuestList as guest, i}
-      <AutoCompleteItem
-        itemLabel={makeMatchBold(guest.fullName)}
-        highlighted={i === currentIndex}
-        on:click={() => setInputVal(guest)}
-      />
-    {/each}
-  </ul>
-{/if}
 
 <style>
   div.autocomplete {
