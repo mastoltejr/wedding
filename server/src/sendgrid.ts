@@ -1,5 +1,7 @@
 import { Group, People } from './googleUtil';
+import dotenv from 'dotenv';
 const sendgrid = require('@sendgrid/mail');
+dotenv.config();
 
 sendgrid.setApiKey(String(process.env.SENDGRID_API_KEY));
 sendgrid.setSubstitutionWrappers('{{', '}}');
@@ -13,7 +15,7 @@ export interface SendEmailProps {
 }
 
 const templateIds: Record<EmailType, string> = {
-  saveTheDate: String(process.env.SENDGRID_SAVETHEDATE_TEMPLATE),
+  saveTheDate: 'd-ed6f03d6b457481787d5b8e31162f9b1',
   rsvp: '',
   registry: '',
   finalCountdown: ''
@@ -21,11 +23,11 @@ const templateIds: Record<EmailType, string> = {
 
 export const sendEmail = ({ people, group, emailType }: SendEmailProps) => {
   people
-    .filter((p) => !!p)
+    .filter((p) => !!p && !!p.email)
     .forEach((person) => {
       const msg = {
         to: person.email,
-        from: 'stoltewedding23@gmail.com',
+        from: 'sms@stolte.us',
         templateId: templateIds[emailType],
         dynamic_template_data: {
           phone: person.phone ?? 'Not Provided',
@@ -42,4 +44,20 @@ export const sendEmail = ({ people, group, emailType }: SendEmailProps) => {
       console.log('Email', JSON.stringify(msg));
       sendgrid.send(msg);
     });
+};
+
+export const sendDataEmail = (
+  data: any,
+  options = {
+    to: 'stoltewedding23@gmail.com',
+    subject: 'Recieved Data'
+  }
+) => {
+  const msg = {
+    to: options.to ?? 'stoltewedding23@gmail.com', // Change to your recipient
+    from: 'sms@stolte.us', // Change to your verified sender
+    subject: options.subject ?? 'Recieved Data',
+    text: JSON.stringify(data)
+  };
+  sendgrid.send(msg);
 };

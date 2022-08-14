@@ -20,7 +20,18 @@
       const fragmentReference = document.querySelector(newLocation.hash);
       // If the fragment does not reference an element, we can ignore it
       if (!fragmentReference) return;
-      fragmentReference.scrollIntoView();
+
+      fragmentReference.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+        inline: 'nearest'
+      });
+      // const yOffset = 0;
+      // const y =
+      //   fragmentReference.getBoundingClientRect().top +
+      //   window.pageYOffset +
+      //   yOffset;
+      // window.scrollTo({ top: y, behavior: 'smooth' });
       // Set a tabindex, so the element can be focused
       if (!fragmentReference.hasAttribute('tabindex')) {
         fragmentReference.setAttribute('tabindex', '-1');

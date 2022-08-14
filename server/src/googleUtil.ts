@@ -18,34 +18,42 @@ export interface Person {
   comment: string;
   groupLabel: string;
 
+  invitePhase: number;
   inviteWedding: boolean;
   attendWedding: boolean;
-  rsvpWedding: boolean;
+  rsvpWedding: boolean | null;
+  weddingUpdated: Date | null;
 
-  email: string;
-  phone: string;
-  phoneAlerts: boolean;
-  mealConsideration: string;
-  highchair: boolean;
-  wheelchair: boolean;
-  saveTheDate: string;
+  email: string | null;
+  phone: string | null;
+  phoneAlerts: boolean | null;
+  mealConsideration: string | null;
+  highchair: boolean | null;
+  wheelchair: boolean | null;
+  saveTheDate: string | null;
+  saveTheDateUpdated: Date | null;
 
-  inviteShower1: boolean;
-  rsvpShower1: boolean;
+  inviteShower1: boolean | null;
+  rsvpShower1: boolean | null;
+  shower1Updated: Date | null;
 
-  inviteShower2: boolean;
-  rsvpShower2: boolean;
+  inviteShower2: boolean | null;
+  rsvpShower2: boolean | null;
+  shower2Updated: Date | null;
 
-  inviteRehearsal: boolean;
-  rsvpRehearsal: boolean;
+  inviteRehearsal: boolean | null;
+  rsvpRehearsal: boolean | null;
+  rehearsalUpdated: Date | null;
 
-  inviteAfterParty: boolean;
-  rsvpAfterParty: boolean;
+  inviteAfterParty: boolean | null;
+  rsvpAfterParty: boolean | null;
+  afterPartyUpdated: Date | null;
 
-  inviteSunday: boolean;
-  rsvpSunday: boolean;
+  inviteSunday: boolean | null;
+  rsvpSunday: boolean | null;
+  sundayUpdated: Date | null;
 
-  lastUpdated: Date;
+  lastUpdated: Date | null;
   fullName: string;
 }
 
@@ -55,22 +63,22 @@ export interface Group {
   id: number;
   groupCode: string;
   family: string;
-  eInvite: boolean;
-  address: string;
-  address2: string;
-  city: string;
-  state: string;
-  zip: string;
-  country: string;
-  mailShower1Invite: boolean;
-  mailShower2Invite: boolean;
-  mailWeddingInvite: boolean;
-  presentIds: number[];
-  mailThankyou: boolean;
-  lastUpdated: Date;
-  primaryPerson: string;
-  secondaryPerson: string;
-  groupTitle: string;
+  eInvite: boolean | null;
+  address: string | null;
+  address2: string | null;
+  city: string | null;
+  state: string | null;
+  zip: string | null;
+  country: string | null;
+  mailShower1Invite: boolean | null;
+  mailShower2Invite: boolean | null;
+  mailWeddingInvite: boolean | null;
+  presentIds: number[] | null;
+  mailThankyou: boolean | null;
+  lastUpdated: Date | null;
+  primaryPerson: string | null;
+  secondaryPerson: string | null;
+  groupTitle: string | null;
 }
 
 export interface InviteGroup
@@ -109,35 +117,34 @@ interface SheetFunction {
 
 const sheetFunctions: Record<DataType, SheetFunction> = {
   string: {
-    fromSheet: (v) => String(v),
-    toSheet: (v: string) => v
+    fromSheet: (v) => (v === '' ? null : String(v)),
+    toSheet: (v: string | null) => (v === null ? '' : v)
   },
   number: {
-    fromSheet: (v) => +v,
-    toSheet: (v: number) => String(v)
+    fromSheet: (v) => (v === '' ? null : +v),
+    toSheet: (v: number | null) => (v === null ? '' : String(v))
   },
   boolean: {
     fromSheet: (v) =>
-      v.toLowerCase() === 'yes' ? true : v === '' ? undefined : false,
-    toSheet: (v: boolean | undefined) =>
-      v === undefined ? 'maybe' : !!v ? 'yes' : 'no'
+      v.toLowerCase() === 'yes' ? true : v === '' ? null : false,
+    toSheet: (v: boolean | null) => (v === null ? '' : !!v ? 'yes' : 'no')
   },
   date: {
-    fromSheet: (a) => (!!!a ? new Date() : parse(a, 'Pp', new Date())),
-    toSheet: (a: Date) => format(new Date(), 'Pp')
+    fromSheet: (a) => (a === '' ? null : parse(a, 'Pp', new Date())),
+    toSheet: (a: Date | null) => (a === null ? '' : format(new Date(), 'Pp'))
   },
   numbers: {
-    fromSheet: (v) => v.split(',').map((s) => +s),
-    toSheet: (v: number[]) => v.join(',')
+    fromSheet: (v) => (v === '' ? [] : v.split(',').map((s) => +s)),
+    toSheet: (v: number[]) => (Array.isArray(v) ? v.join(',') : '')
   },
   strings: {
-    fromSheet: (v) => v.split(','),
-    toSheet: (v: string[]) => v.join(',')
+    fromSheet: (v) => (v === '' ? [] : v.split(',')),
+    toSheet: (v: string[]) => (Array.isArray(v) ? v.join(',') : '')
   }
 };
 
-const personReadRange = 'Person_db!A2:AF';
-const personWriteRange = 'Person_db!D2:AE2';
+const personReadRange = 'Person_db!A2:AN';
+const personWriteRange = 'Person_db!D2:AM2';
 const personDbKeys: Key[] = [
   { key: 'id', type: 'number', readonly: true },
   { key: 'code', type: 'string', readonly: true },
@@ -150,9 +157,11 @@ const personDbKeys: Key[] = [
   { key: 'comment', type: 'string', readonly: false },
   { key: 'groupLabel', type: 'string', readonly: false },
 
+  { key: 'invitePhase', type: 'number', readonly: false },
   { key: 'inviteWedding', type: 'boolean', readonly: false },
   { key: 'attendWedding', type: 'boolean', readonly: false },
   { key: 'rsvpWedding', type: 'boolean', readonly: false },
+  { key: 'weddingUpdate', type: 'date', readonly: false },
 
   { key: 'email', type: 'string', readonly: false },
   { key: 'phone', type: 'string', readonly: false },
@@ -161,21 +170,27 @@ const personDbKeys: Key[] = [
   { key: 'highchair', type: 'boolean', readonly: false },
   { key: 'wheelchair', type: 'boolean', readonly: false },
   { key: 'saveTheDate', type: 'string', readonly: false },
+  { key: 'saveTheDateUpdate', type: 'date', readonly: false },
 
   { key: 'inviteShower1', type: 'boolean', readonly: false },
   { key: 'rsvpShower1', type: 'boolean', readonly: false },
+  { key: 'shower1Update', type: 'date', readonly: false },
 
   { key: 'inviteShower2', type: 'boolean', readonly: false },
   { key: 'rsvpShower2', type: 'boolean', readonly: false },
+  { key: 'shower2Update', type: 'date', readonly: false },
 
   { key: 'inviteRehearsal', type: 'boolean', readonly: false },
   { key: 'rsvpRehearsal', type: 'boolean', readonly: false },
+  { key: 'rehearsalUpdate', type: 'date', readonly: false },
 
   { key: 'inviteAfterParty', type: 'boolean', readonly: false },
   { key: 'rsvpAfterParty', type: 'boolean', readonly: false },
+  { key: 'afterPartyUpdate', type: 'date', readonly: false },
 
   { key: 'inviteSunday', type: 'boolean', readonly: false },
   { key: 'rsvpSunday', type: 'boolean', readonly: false },
+  { key: 'sundayUpdate', type: 'date', readonly: false },
 
   { key: 'lastUpdated', type: 'date', readonly: false },
   { key: 'fullName', type: 'string', readonly: true }
@@ -223,7 +238,7 @@ export const dbToSheet = (obj: {}, sheet: Sheet = 'Person_db') =>
   (sheet === 'Person_db' ? personDbKeys : groupDbKeys)
     .filter((k) => !k.readonly)
     .map(({ key, type }) =>
-      sheetFunctions[type].toSheet(obj[key as keyof typeof obj] ?? '')
+      sheetFunctions[type].toSheet(obj[key as keyof typeof obj])
     );
 
 export const readData = async (sheet: Sheet = 'Person_db') => {

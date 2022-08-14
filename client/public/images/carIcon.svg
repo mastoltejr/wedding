@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Layer_1" x="0px" y="0px" width="24px" height="18px" viewBox="0 0 24 18" enable-background="new 0 0 24 18" xml:space="preserve">
+<g>
+	<defs>
+		<rect id="SVGID_1_" x="-121.625" y="-21.482" width="170.543" height="130.75"/>
+	</defs>
+	<clipPath id="SVGID_2_">
+		<use xlink:href="#SVGID_1_" overflow="visible"/>
+	</clipPath>
+	
+		<circle clip-path="url(#SVGID_2_)" fill="none" stroke="#FFFFFF" stroke-width="0.593" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" cx="5.558" cy="11.952" r="1.333"/>
+	
+		<circle clip-path="url(#SVGID_2_)" fill="none" stroke="#FFFFFF" stroke-width="0.593" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" cx="18.054" cy="11.952" r="1.333"/>
+	
+		<line clip-path="url(#SVGID_2_)" fill="none" stroke="#FFFFFF" stroke-width="0.593" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="8.176" y1="11.952" x2="15.435" y2="11.952"/>
+	
+		<path clip-path="url(#SVGID_2_)" fill="none" stroke="#FFFFFF" stroke-width="0.593" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" d="   M3.188,11.952H2.053c0,0-0.247-3.037,2.567-3.235c2.815-0.197,3.753-0.345,3.753-0.345l2.914-3.087h5.679l1.976,2.445h3.062v3.111   l-1.481,1.111"/>
+</g>
+</svg>

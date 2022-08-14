@@ -95,6 +95,7 @@
     position: relative;
     display: inline-block;
     width: 300px;
+    margin: 0px auto;
   }
   input {
     padding: 10px;

@@ -1,6 +1,10 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import { nanoid } from 'nanoid';
   let intersect = false;
+  export let color = 'var(--color-primary)';
+  export let accentColor = color;
+  let titleID = `title-${nanoid(6)}`;
 
   onMount(() => {
     const callback: IntersectionObserverCallback = (entries) => {
@@ -10,15 +14,20 @@
     };
 
     let observer = new IntersectionObserver(callback, {
-      rootMargin: '-10% 0% -20% 0%',
+      rootMargin: '-15% 0% -20% 0%',
       threshold: 0.9
     });
 
-    observer.observe(document.querySelector('.title'));
+    observer.observe(document.querySelector('#' + titleID));
   });
 </script>
 
-<div class="title" class:intersect>
+<div
+  id={titleID}
+  class="title"
+  class:intersect
+  style="--color: {color}; --accent-color: {accentColor}"
+>
   <slot />
 </div>
 
@@ -26,8 +35,8 @@
   .title {
     position: relative;
     display: inline-block;
-    font-size: var(--typography-1);
-    color: var(--color-primary);
+    color: var(--color);
+    text-transform: uppercase;
   }
 
   .title::before {
@@ -35,7 +44,7 @@
     position: absolute;
     top: -8px;
     height: 5px;
-    background-color: var(--color-primary);
+    background-color: var(--accent-color);
     left: 0px;
     width: 20%;
     border-radius: 2.5px;
@@ -45,5 +54,10 @@
   .title:hover::before,
   .title.intersect::before {
     width: 60%;
+  }
+
+  .title :global(*) {
+    margin: 0.5rem !important;
+    font-weight: 400 !important;
   }
 </style>

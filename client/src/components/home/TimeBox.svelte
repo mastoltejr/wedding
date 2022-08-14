@@ -53,7 +53,7 @@
     margin: 0;
     padding: var(--spacing-3) var(--spacing-1);
     font-weight: bold;
-    font-size: var(--typography-3);
+    font-size: var(--typography-2);
     color: white;
     background-image: url('/images/sacredOaks.jpeg');
     background-size: cover;
@@ -63,6 +63,8 @@
 
   #title {
     font-size: 120%;
+    display: block;
+    margin-bottom: 5rem;
   }
 
   #dark-layer {

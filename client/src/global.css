@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+Display:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+@import url("https://fonts.googleapis.com/css?family=Montserrat:100,200,300");
 
 @font-face {
   font-family: Aisyah;
@@ -38,10 +39,10 @@ a:-webkit-any-link {
 }
 
 :root {
-  --color-primary: #75464a;
-  --color-primary-hs: 355, 25%;
-  --color-secondary: #aa7c7a;
-  --color-tertiary: #beaba7;
+  --color-primary: #A9747A; /*#75464a;*/
+  --color-primary-hs: 353, 24%;
+  --color-secondary: #8EAAB0;/*#aa7c7a;*/
+  --color-tertiary: #141414;/*#beaba7;*/
 
   --color-error-light: #e57373;
   --color-error: #f44336;
@@ -60,22 +61,22 @@ a:-webkit-any-link {
   --color-success-dark: #388e3c;
 
   --color-html: #e8e8e9;
-  --color-background: #f3eeea;
-  --color-paper: #f3eae8;
+  --color-background: #D0BDB1; /*#f3eeea;*/
+  --color-paper: #F6F3EE;/*#f3eae8;*/
 
   --spacing-1: 0.5rem;
   --spacing-2: 1rem;
   --spacing-3: 1.5rem;
-  --spacing-4: 2rem;
-  --spacing-5: 2.5rem;
-  --spacing-6: 3rem;
+  --spacing-4: 3rem;
+  --spacing-5: 4.5rem;
+  --spacing-6: 6rem;
 
   --typography-6: 0.8rem;
   --typography-5: 1rem;
   --typography-4: 1.5rem;
-  --typography-3: 1.7rem;
-  --typography-2: 2rem;
-  --typography-1: 2.2rem;
+  --typography-3: 1.9rem;
+  --typography-2: 2.3rem;
+  --typography-1: 2.8rem;
 
   --typography-fluid-1: clamp(1.1rem, 0.5rem + 2vw, var(--typography-5));
 }
@@ -84,14 +85,24 @@ html {
   background-color: var(--color-html);
   -webkit-tap-highlight-color: transparent;
   scroll-behavior: smooth;
-  font-family: 'Noto Serif Display', serif;
+  /* font-family: 'Noto Serif Display', serif; */
+  font-family: "Montserrat";
+  font-feature-settings: "kern","liga","pnum";
+  -webkit-font-smoothing: antialiased;
+  scroll-padding-top: 144px;
+  max-width: 100vw;
+  overflow-x: hidden;
 }
 
 body {
-  background-color: white;
-  max-width: 1440px;
+  background-color: var(--color-background);
   margin: 0px auto;
   min-height: 100vh;
+}
+
+.text {
+  font-size: 140%;
+    line-height: 140%;
 }
 
 .box {
@@ -104,4 +115,34 @@ body {
 
 .color__primary {
   color: var(--color-primary);
+}
+
+h1 { font-size: var(--typography-1); font-family: Futura, sans-serif; line-height: 100%;}
+h2 { font-size: var(--typography-2); font-family: Futura, sans-serif;}
+h3 { font-size: var(--typography-3); font-family: Futura, sans-serif;}
+h4 { font-size: var(--typography-4); font-family: Futura, sans-serif;}
+h5 { font-size: var(--typography-5);}
+h6 { font-size: var(--typography-6);}
+
+section {
+  position: relative;
+  width: 100vw;
+  padding: var(--spacing-6);
+}
+
+.parallax__image {
+  position: relative;
+  background-attachment: fixed;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  display: grid;
+  text-align: center;
+  text-decoration: none;
+}
+
+@media screen and (max-width: 992px) { /**/
+  .parallax__image {
+    background-attachment: scroll;
+  }
 }

@@ -1,4 +1,8 @@
-<span class="title">
+<script lang="ts">
+  export let color = 'var(--color-primary)';
+</script>
+
+<span class="title" style="--color: {color}">
   <slot />
 </span>
 
@@ -6,7 +10,7 @@
   .title {
     position: relative;
     display: inline-block;
-    color: var(--color-primary);
+    color: var(--color);
   }
 
   .title::before {
@@ -14,7 +18,7 @@
     position: absolute;
     bottom: -8px;
     height: 2px;
-    background-color: var(--color-primary);
+    background-color: var(--color);
     left: 0px;
     width: 0%;
     border-radius: 2.5px;
@@ -33,11 +37,7 @@
     right: -19px;
     height: 10px;
     clip-path: polygon(75% 0%, 100% 50%, 75% 100%, 65% 100%, 90% 50%, 65% 0%);
-    background-color: var(--color-primary);
-    /* opacity: 0; */
-    /* bottom: -12px; */
-    /* right: -8px; */
-    /* transition: opacity 0.5s; */
+    background-color: var(--color);
   }
 
   .title:hover::after {

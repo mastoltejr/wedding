@@ -19,7 +19,7 @@
     position: relative;
     width: 100%;
     max-width: 14rem;
-    margin: var(--spacing-6) auto var(--spacing-2) auto;
+    /* margin: var(--spacing-6) auto var(--spacing-2) auto; */
   }
 
   .block:after {

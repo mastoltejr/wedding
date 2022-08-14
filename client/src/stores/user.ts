@@ -13,34 +13,42 @@ export interface Person {
   comment: string;
   groupLabel: string;
 
+  invitePhase: number;
   inviteWedding: boolean;
   attendWedding: boolean;
-  rsvpWedding: boolean;
+  rsvpWedding: boolean | null;
+  weddingUpdate: Date | null;
 
-  email: string;
-  phone: string;
-  phoneAlerts: boolean;
-  mealConsideration: string;
-  highchair: boolean;
-  wheelchair: boolean;
-  saveTheDate: string;
+  email: string | null;
+  phone: string | null;
+  phoneAlerts: boolean | null;
+  mealConsideration: string | null;
+  highchair: boolean | null;
+  wheelchair: boolean | null;
+  saveTheDate: string | null;
+  saveTheDateUpdate: Date | null;
 
-  inviteShower1: boolean;
-  rsvpShower1: boolean;
+  inviteShower1: boolean | null;
+  rsvpShower1: boolean | null;
+  shower1Update: Date | null;
 
-  inviteShower2: boolean;
-  rsvpShower2: boolean;
+  inviteShower2: boolean | null;
+  rsvpShower2: boolean | null;
+  shower2Update: Date | null;
 
-  inviteRehearsal: boolean;
-  rsvpRehearsal: boolean;
+  inviteRehearsal: boolean | null;
+  rsvpRehearsal: boolean | null;
+  rehearsalUpdate: Date | null;
 
-  inviteAfterParty: boolean;
-  rsvpAfterParty: boolean;
+  inviteAfterParty: boolean | null;
+  rsvpAfterParty: boolean | null;
+  afterPartyUpdate: Date | null;
 
-  inviteSunday: boolean;
-  rsvpSunday: boolean;
+  inviteSunday: boolean | null;
+  rsvpSunday: boolean | null;
+  sundayUpdate: Date | null;
 
-  lastUpdated: Date;
+  lastUpdated: Date | null;
   fullName: string;
 }
 
@@ -82,11 +90,11 @@ export const user = writable<UserStore>({
 
 export const getUserData = (userCode: string): Promise<boolean> => {
   return axios
-    .get<UserData>('http://localhost:5001' + '/userInfo', {
+    .get<UserData>(import.meta.env.VITE_API_URL + '/userInfo', {
       params: { userCode }
     })
     .then(({ data }) => {
-      console.log('Data Recieved', data);
+      // console.log('Data Recieved', data);
       user.set({ ...data, doNotSync: true });
       return true;
     });
@@ -94,8 +102,8 @@ export const getUserData = (userCode: string): Promise<boolean> => {
 
 const syncUserToDB = (data: UserStore) => {
   if (!!data.person && !!!data.doNotSync) {
-    console.log('SYNCING TO DB', data);
-    axios.post<boolean>('http://localhost:5001' + '/userInfo', {
+    // console.log('SYNCING TO DB', data);
+    axios.post<boolean>(import.meta.env.VITE_API_URL + '/userInfo', {
       ...data
     });
   }

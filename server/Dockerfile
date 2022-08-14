@@ -1,6 +1,8 @@
-FROM node:latest
-WORKDIR /srv/app
+FROM node:alpine
+RUN apk add --no-cache  chromium --repository=http://dl-cdn.alpinelinux.org/alpine/v3.10/main
+WORKDIR /app
 COPY package*.json ./
+COPY .env ./
 RUN npm install
 COPY . .
 RUN npm run build

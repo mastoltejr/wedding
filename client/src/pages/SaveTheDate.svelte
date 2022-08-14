@@ -6,11 +6,12 @@
   import { imask, MaskedInput } from 'svelte-imask';
   import * as yup from 'yup';
   import Spinner from '../components/Spinner.svelte';
-  import { useNavigate } from 'svelte-navigator';
+  import { useNavigate, useFocus } from 'svelte-navigator';
   import { onMount } from 'svelte';
   import Title from '../components/Title.svelte';
   import { fly } from 'svelte/transition';
 
+  const registerFocus = useFocus();
   let loading = true;
   let doesNotExist = false;
   let approve = false; // TODO false
@@ -48,8 +49,16 @@
 
   const personValidation = yup.object().shape({
     code: yup.string().required(),
+    title: yup.string(),
     firstName: yup.string().required(),
     lastName: yup.string().required(),
+    suffix: yup.string(),
+    email: yup.string().email().required(),
+    phoneAlerts: yup.boolean(),
+    phone: yup.string().when('phoneAlerts', {
+      is: true,
+      then: yup.string().required('Phone Number is required')
+    }),
     saveTheDate: yup.string().required()
   });
 
@@ -75,22 +84,89 @@
         guests: []
       },
       validationSchema: personValidation.shape({
-        email: yup.string().email().required(),
-        phone: yup.string().when('phoneAlerts', {
-          is: true,
-          then: yup.string().required('Phone Number is required')
-        }),
+        eInvite: yup.boolean(),
         address: yup.string().required('Address is required'),
         city: yup.string().required('City is required'),
         state: yup.string().required('State is required'),
         zip: yup.string().required('Zip Code is required'),
-        country: yup.string().required('Country is required'),
-        guests: yup.array().of(personValidation)
+        country: yup.string(), //.required('Country is required'),
+        guests: yup.array().of(
+          yup.object().shape({
+            code: yup.string().required(),
+            title: yup.string(),
+            firstName: yup.string(),
+            lastName: yup.string(),
+            suffix: yup.string(),
+            email: yup.string().email(),
+            phoneAlerts: yup.boolean(),
+            phone: yup.string().when('phoneAlerts', {
+              is: true,
+              then: yup.string().required('Phone Number is required')
+            }),
+            saveTheDate: yup.string().required()
+          })
+        ) //.of(personValidation)
       }),
       onSubmit: (values) => {
         if (isValid) {
           approve = true;
-          navigate('#whenwhere');
+          user.update((data) => ({
+            person: {
+              ...data.person,
+              ...slimObject($form, [
+                'code',
+                'title',
+                'firstName',
+                'lastName',
+                'suffix',
+                'email',
+                'phone',
+                'phoneAlerts',
+                'saveTheDate'
+              ]),
+              saveTheDateUpdated: new Date(),
+              lastUpdated: new Date()
+            },
+            group: {
+              ...data.group,
+              ...slimObject($form, [
+                'eInvite',
+                'address',
+                'address2',
+                'city',
+                'state',
+                'zip',
+                'country'
+              ]),
+              lastUpdated: new Date()
+            },
+            peopleInGroup: data.peopleInGroup.reduce(
+              (group, person) => [
+                ...group,
+                {
+                  ...person,
+                  ...slimObject(
+                    $form.guests.find((g) => g.code === person.code)!,
+                    [
+                      'code',
+                      'title',
+                      'firstName',
+                      'lastName',
+                      'suffix',
+                      'email',
+                      'phone',
+                      'phoneAlerts',
+                      'saveTheDate'
+                    ]
+                  ),
+                  saveTheDateUpdated: new Date(),
+                  lastUpdated: new Date()
+                }
+              ],
+              []
+            )
+          }));
+          navigate('#approveStep2');
         } else {
           showErrors = true;
         }
@@ -100,37 +176,33 @@
   user.subscribe((data) => {
     if (data.person !== undefined) {
       form.set({
-        ...slimObject(data.person, [
-          'code',
-          'title',
-          'firstName',
-          'lastName',
-          'suffix',
-          'email',
-          'phone',
-          'phoneAlerts',
-          'saveTheDate'
-        ]),
-        ...slimObject(data.group, [
-          'eInvite',
-          'address',
-          'address2',
-          'city',
-          'state',
-          'zip',
-          'country'
-        ]),
-        guests: slimObjects(data.peopleInGroup, [
-          'code',
-          'title',
-          'firstName',
-          'lastName',
-          'suffix',
-          'email',
-          'phone',
-          'phoneAlerts',
-          'saveTheDate'
-        ])
+        code: data.person.code,
+        title: data.person.title ?? '',
+        firstName: data.person.firstName ?? '',
+        lastName: data.person.lastName ?? '',
+        suffix: data.person.suffix ?? '',
+        email: data.person.email ?? '',
+        phone: data.person.phone ?? '',
+        phoneAlerts: data.person.phoneAlerts ?? false,
+        saveTheDate: data.person.saveTheDate ?? '',
+        eInvite: data.group.eInvite ?? false,
+        address: data.group.address ?? '',
+        address2: data.group.address2 ?? '',
+        city: data.group.city ?? '',
+        state: data.group.state ?? '',
+        zip: data.group.zip ?? '',
+        country: data.group.country ?? '',
+        guests: data.peopleInGroup.map((p) => ({
+          code: p.code,
+          title: p.title ?? '',
+          firstName: p.firstName ?? '',
+          lastName: p.lastName ?? '',
+          suffix: p.suffix ?? '',
+          email: p.email ?? '',
+          phone: p.phone ?? '',
+          phoneAlerts: p.phoneAlerts ?? false,
+          saveTheDate: p.saveTheDate ?? ''
+        }))
       });
       loading = false;
     }
@@ -138,56 +210,62 @@
 
   const finalApprove = () => {
     // submit form to google sheets
-    user.update((data) => ({
-      person: {
-        ...data.person,
-        ...slimObject($form, [
-          'code',
-          'title',
-          'firstName',
-          'lastName',
-          'suffix',
-          'email',
-          'phone',
-          'phoneAlerts',
-          'saveTheDate'
-        ])
-      },
-      group: {
-        ...data.group,
-        ...slimObject($form, [
-          'eInvite',
-          'address',
-          'address2',
-          'city',
-          'state',
-          'zip',
-          'country'
-        ])
-      },
-      peopleInGroup: data.peopleInGroup.reduce(
-        (group, person) => [
-          ...group,
-          {
-            ...person,
-            ...slimObject($form.guests.find((g) => g.code === person.code)!, [
-              'code',
-              'title',
-              'firstName',
-              'lastName',
-              'suffix',
-              'email',
-              'phone',
-              'phoneAlerts',
-              'saveTheDate'
-            ])
-          }
-        ],
-        []
-      )
-    }));
+    // user.update((data) => ({
+    //   person: {
+    //     ...data.person,
+    //     ...slimObject($form, [
+    //       'code',
+    //       'title',
+    //       'firstName',
+    //       'lastName',
+    //       'suffix',
+    //       'email',
+    //       'phone',
+    //       'phoneAlerts',
+    //       'saveTheDate'
+    //     ]),
+    //     saveTheDateUpdated: new Date(),
+    //     lastUpdated: new Date()
+    //   },
+    //   group: {
+    //     ...data.group,
+    //     ...slimObject($form, [
+    //       'eInvite',
+    //       'address',
+    //       'address2',
+    //       'city',
+    //       'state',
+    //       'zip',
+    //       'country'
+    //     ]),
+    //     lastUpdated: new Date()
+    //   },
+    //   peopleInGroup: data.peopleInGroup.reduce(
+    //     (group, person) => [
+    //       ...group,
+    //       {
+    //         ...person,
+    //         ...slimObject($form.guests.find((g) => g.code === person.code)!, [
+    //           'code',
+    //           'title',
+    //           'firstName',
+    //           'lastName',
+    //           'suffix',
+    //           'email',
+    //           'phone',
+    //           'phoneAlerts',
+    //           'saveTheDate'
+    //         ]),
+    //         saveTheDateUpdated: new Date(),
+    //         lastUpdated: new Date()
+    //       }
+    //     ],
+    //     []
+    //   )
+    // }));
     finished = true;
     sendEmail($user, 'saveTheDate');
+    navigate('#backToHomeStep3');
   };
 
   const countErrors = (obj: Object): number => {
@@ -214,7 +292,7 @@
 </script>
 
 <div class="box">
-  <div class="center">
+  <div class="center" use:registerFocus>
     <Title><h1>Save The Date</h1></Title>
     <div id="text">
       Please fill in the following information (1 form per household) so we know
@@ -235,6 +313,8 @@
       <h1 style:color="white">Does not exist</h1>
     {:else if finished}
       <h2
+        use:registerFocus
+        id="backToHomeStep3"
         class="color__primary"
         style="text-align: center;text-transform: uppercase; font-weight: 400"
       >
@@ -242,7 +322,7 @@
       </h2>
       <div class="approve">
         {#if $form.saveTheDate === 'Yes'}
-          <p>We look forward to seeing you on at our wedding!</p>
+          <p>We look forward to seeing you at our wedding!</p>
         {:else if $form.saveTheDate === 'Maybe'}
           <p>
             We hope to see you at our wedding, but we know life happens...<br />
@@ -261,7 +341,9 @@
       </div>
     {:else if approve}
       <h2
+        use:registerFocus
         class="color__primary"
+        id="approveStep2"
         style="text-align: center;text-transform: uppercase; font-weight: 400"
       >
         Take a quick look & make sure everything's right.
@@ -298,7 +380,7 @@
             {/each}
           </div>
         {/if}
-        <button id="looksGood" on:click={finalApprove}>Looks good!</button>
+        <button id="looksGood" on:click={finalApprove}>Looks Good!</button>
         <button id="backEdit" on:click={backToEdit}>Go back and edit</button>
       </div>
     {:else}
@@ -316,11 +398,11 @@
                 <option />
                 <option value="Mr.">Mr.</option>
                 <option value="Mrs.">Mrs.</option>
+                <option value="Miss">Miss</option>
+                <option value="Ms.">Ms.</option>
+                <option value="Sr.">Sr.</option>
                 <option value="Sra.">Sra.</option>
-                <option value="Ms.">Miss</option>
                 <option value="Dr.">Dr.</option>
-                <option value="Judge">Judge</option>
-                <option value="Juez">Juez</option>
               </select>
               <label for="title">Title</label>
             </div>
@@ -442,6 +524,19 @@
               <label for="address2">Address Line 2</label>
             </div>
           </div>
+          <div class="[ form__row ]">
+            <div class="field">
+              <input
+                type="text"
+                name="city"
+                id="city"
+                placeholder="First Name"
+                on:change={handleChange}
+                bind:value={$form.city}
+              />
+              <label for="city">City</label>
+            </div>
+          </div>
           <div class="[ form__row shrink]">
             <div class="field">
               <input
@@ -503,6 +598,7 @@
             />
             <label for="evite_switch" />
             <span
+              class="text"
               style="color: {$form.eInvite ? 'var(--color-primary' : 'grey'}"
               >I'd prefer an email invation <u>only</u></span
             >
@@ -520,11 +616,12 @@
               />
               <label for="phoneAlerts" />
               <span
+                class="text"
                 style="color: {$form.phoneAlerts
                   ? 'var(--color-primary'
                   : 'grey'}">Recieve text-message alerts ?</span
               >
-              <ul>
+              <ul class="text">
                 <li>Event location and times</li>
                 <li>Driving directions</li>
                 <li>Alternate plans due to weather</li>
@@ -547,11 +644,11 @@
                     <option />
                     <option value="Mr.">Mr.</option>
                     <option value="Mrs.">Mrs.</option>
+                    <option value="Miss">Miss</option>
+                    <option value="Ms.">Ms.</option>
+                    <option value="Sr.">Sr.</option>
                     <option value="Sra.">Sra.</option>
-                    <option value="Ms.">Miss</option>
                     <option value="Dr.">Dr.</option>
-                    <option value="Judge">Judge</option>
-                    <option value="Juez">Juez</option>
                   </select>
                   <label for="title">Title</label>
                 </div>
@@ -659,11 +756,12 @@
                   />
                   <label for={`phoneAlerts${g}`} />
                   <span
+                    class="text"
                     style="color: {$form.guests[g].phoneAlerts
                       ? 'var(--color-primary'
                       : 'grey'}">Recieve text-message updates ?</span
                   >
-                  <ul>
+                  <ul class="text">
                     <li>Event location and times</li>
                     <li>Driving directions</li>
                     <li>Alternate plans due to weather</li>
@@ -672,46 +770,6 @@
               </div>
             </fieldset>
           {/each}
-
-          <!-- <fieldset>
-            <legend class="[ color__primary ]">Save The Date</legend>
-            <p class="radio__option">
-              <input
-                type="radio"
-                id="attend1"
-                name="attend"
-                value="I plan on attending"
-                bind:group={$form.saveTheDate}
-              />
-              <label for="attend1"> I plan on attending </label>
-            </p>
-            <p class="radio__option">
-              <input
-                type="radio"
-                id="attend3"
-                name="attend"
-                value="Unsure if I'll be able to attend"
-                bind:group={$form.saveTheDate}
-              />
-              <label for="attend3">
-                Unsure if I'll be able to attend
-              </label>
-            </p>
-            <p class="radio__option">
-              <input
-                type="radio"
-                id="attend4"
-                name="attend"
-                value="I won't be able to attend"
-                bind:group={$form.saveTheDate}
-              />
-              <label for="attend4"> I won't be able to attend </label>
-            </p>
-            <p class="[ inset ]" style="color: grey">
-              <span style="text-decoration: underline">This is not an RSVP</span
-              >, we'd just like to start gauging attendence.
-            </p>
-          </fieldset> -->
 
           <fieldset>
             <legend class="[ color__primary ]">Save The Date</legend>
@@ -738,7 +796,7 @@
                       type="radio"
                       id="attend2"
                       name="attend"
-                      value="Unsure"
+                      value="Maybe"
                       bind:group={$form.saveTheDate}
                     />
                     <label for="attend2">Unsure</label>
@@ -804,7 +862,8 @@
             </div>
             <p class="[ inset ]" style="color: grey">
               <span style="text-decoration: underline">This is not an RSVP</span
-              >, we'd just like to start gauging attendence.
+              >, it's okay to be unsure. We're guaging attendance and making
+              sure you know to mark your calendar. Hope to see you there!
             </p>
           </fieldset>
           {#if $errors.saveTheDate || (Array.isArray($errors.guests) ? $errors.guests : []).some((g) => !!!g.saveTheDate)}
@@ -834,7 +893,7 @@
     width: 100%;
     max-width: 50rem;
     margin: auto;
-    background-color: white;
+    background-color: var(--color-paper);
     padding: var(--spacing-5) var(--spacing-2);
   }
   .box {

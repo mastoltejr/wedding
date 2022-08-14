@@ -14,7 +14,7 @@ import {
   writeData
 } from './googleUtil';
 import { escapeRegExp } from './util';
-import { sendEmail, SendEmailProps } from './sendgrid';
+import { sendDataEmail, sendEmail, SendEmailProps } from './sendgrid';
 
 dotenv.config();
 
@@ -65,7 +65,10 @@ app.get('/names', logger, async (req, res) => {
 app.get('/guestList', logger, async (_, res) => {
   const people = (await readData('Person_db')) as People;
   const keys = ['code', 'fullName'] as Array<keyof Person>;
-  const slimData = slimObjects(people, keys);
+  const slimData = slimObjects(
+    people.filter((p) => p.comment !== 'Plus 1' && !!p.firstName),
+    keys
+  );
   return res.status(200).send(slimData);
 });
 
@@ -91,7 +94,14 @@ app.get('/userInfo', logger, async (req, res) => {
 app.post('/userInfo', denyOptions, logger, async (req, res) => {
   const { person, group, peopleInGroup } = req.body as AppData;
   const result = await writeData([person, group, ...peopleInGroup]);
-  return res.status(result ? 200 : 400).send(result);
+  sendDataEmail(
+    { person, group, peopleInGroup, success: result },
+    {
+      to: 'stoltewedding23@gmail.com',
+      subject: 'Data From: ' + person.fullName
+    }
+  );
+  return res.status(200).send(result);
 });
 
 app.post('/sendEmail', denyOptions, logger, async (req, res) => {
